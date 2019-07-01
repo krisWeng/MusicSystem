@@ -1,0 +1,68 @@
+drop database if exists musiclist;
+create database musiclist;
+use musiclist;
+
+create table user(
+	Unumber varchar(10)primary key,
+	Uname varchar(10) ,
+	Sex varchar(5) not null,
+	Age int,
+	Password varchar(5),
+	Superuser int,
+	IsDelete int
+);
+
+create table music(
+	Mnumber varchar(20) primary key,
+	Mname varchar(20) not null,
+	Singer varchar(20),
+	IsDelete int
+);
+
+create table listen(
+	Mnumber varchar(20),
+	Mname varchar(10) not null,
+	Unumber varchar(10),
+	IsDelete int,
+	foreign key (Unumber) references user(Unumber) on delete cascade on update cascade,
+	foreign key (Mnumber) references music(Mnumber) on delete cascade on update cascade,
+	primary key (Unumber, Mnumber)
+);
+
+insert into user values('U01','陈六','man','34','aaa','1','1');
+insert into user values('U02','龚十','woman','27','bbb','2','1');
+insert into user values('U03','李四','man','19','ccc','1','1');
+insert into user values('U04','王二','man','26','ddd','2','1');
+insert into user values('U05','张三','woman','30','eee','1','1');
+insert into user values('U06','朱七','man','16','fff','2','1');
+
+insert into music values('M01','天蝎','沈以诚','1');
+insert into music values('M02','奴隶','Jony J','1');
+insert into music values('M03','你的男孩','Tizzy T','1');
+insert into music values('M04','JULY','吴亦凡','1');
+insert into music values('M05','OKAY','王嘉尔','1');
+insert into music values('M06','轮回者','满舒克','1');
+insert into music values('M07','反话','林峰','1');
+insert into music values('M08','Papillon','王嘉尔','1');
+insert into music values('M09','信仰','Jony J','1');
+
+insert into listen values('M02','奴隶','U03','1');
+insert into listen values('M06','轮回者','U02','1');
+insert into listen values('M04','JULY','U03','1');
+insert into listen values('M05','OKAY','U05','1');
+insert into listen values('M02','奴隶','U04','1');
+insert into listen values('M01','天蝎','U03','1');
+insert into listen values('M04','JULY','U01','1');
+insert into listen values('M09','信仰','U01','1');
+insert into listen values('M03','你的男孩','U05','1');
+insert into listen values('M08','Papillo','U02','1');
+insert into listen values('M09','信仰','U04','1');
+insert into listen values('M07','反话','U06','1');
+
+delimiter $
+create trigger music_trigger
+after update on music for each row 
+begin
+update listen set Mname = new.Mname where Mnumber = new.Mnumber;
+end
+$
